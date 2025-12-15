@@ -15,7 +15,6 @@ const CaseStudies: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [newStudy, setNewStudy] = useState({
     title: '',
     notes: '',
@@ -66,7 +65,6 @@ const CaseStudies: React.FC = () => {
         setCaseStudies(caseStudies.map(study => 
           study.id === id ? response.data.data : study
         ));
-        setEditingId(null);
       }
     } catch (err: any) {
       console.error('Error updating case study:', err);

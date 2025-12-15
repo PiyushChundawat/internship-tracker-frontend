@@ -18,7 +18,6 @@ const RatingTracker: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingPlatform, setEditingPlatform] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRatings();
@@ -63,7 +62,6 @@ const RatingTracker: React.FC = () => {
       
       if (response.data.success) {
         // Update confirmed
-        setEditingPlatform(null);
       }
     } catch (err: any) {
       console.error('Error updating rating:', err);
@@ -71,10 +69,6 @@ const RatingTracker: React.FC = () => {
       // Revert on error
       fetchRatings();
     }
-  };
-
-  const handleBlur = (platform: string) => {
-    setEditingPlatform(null);
   };
 
   if (loading) {
@@ -113,8 +107,6 @@ const RatingTracker: React.FC = () => {
             type="number"
             value={ratings.codeforces}
             onChange={(e) => updateRating('codeforces', e.target.value)}
-            onFocus={() => setEditingPlatform('codeforces')}
-            onBlur={() => handleBlur('codeforces')}
             className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
             min="0"
           />
@@ -134,8 +126,6 @@ const RatingTracker: React.FC = () => {
             type="number"
             value={ratings.leetcode}
             onChange={(e) => updateRating('leetcode', e.target.value)}
-            onFocus={() => setEditingPlatform('leetcode')}
-            onBlur={() => handleBlur('leetcode')}
             className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
             min="0"
           />
@@ -154,8 +144,6 @@ const RatingTracker: React.FC = () => {
             type="number"
             value={ratings.codechef}
             onChange={(e) => updateRating('codechef', e.target.value)}
-            onFocus={() => setEditingPlatform('codechef')}
-            onBlur={() => handleBlur('codechef')}
             className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
             min="0"
           />

@@ -21,7 +21,6 @@ const CoursesTracker: React.FC<CoursesTrackerProps> = ({ profile }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [newCourse, setNewCourse] = useState({
     course_name: '',
     platform: '',
@@ -78,7 +77,6 @@ const CoursesTracker: React.FC<CoursesTrackerProps> = ({ profile }) => {
         setCourses(courses.map(course => 
           course.id === id ? response.data.data : course
         ));
-        setEditingId(null);
       }
     } catch (err: any) {
       console.error('Error updating course:', err);
