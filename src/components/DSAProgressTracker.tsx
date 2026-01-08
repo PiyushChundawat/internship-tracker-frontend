@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BookOpen, CheckSquare, Square, Plus, ExternalLink, Youtube, Trash2 } from 'lucide-react';
+import { BookOpen, CheckSquare, Square, Plus, ExternalLink, Youtube, Trash2, Edit, Save, X } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -140,14 +140,14 @@ const DSAProgressTracker: React.FC = () => {
       return (
         <div className="mb-4">
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-bold text-gray-800">{label}</span>
-            <span className="text-sm font-bold text-gray-800">
+            <span className="text-sm font-medium text-white">{label}</span>
+            <span className="text-sm font-medium text-gray-400">
               {solved} / {total} <span className="text-gray-500">({percent}%)</span>
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4 shadow-inner">
+          <div className="w-full bg-gray-700 rounded-full h-3">
             <div 
-              className={`h-4 rounded-full ${color} transition-all duration-500 shadow-md`} 
+              className={`h-3 rounded-full ${color} transition-all duration-500`} 
               style={{ width: `${percent}%` }}
             ></div>
           </div>
@@ -157,10 +157,10 @@ const DSAProgressTracker: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl shadow-2xl border border-orange-200">
+      <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-orange-200 rounded w-1/3"></div>
-          <div className="h-48 bg-orange-200 rounded"></div>
+          <div className="h-8 bg-gray-700 rounded w-1/3"></div>
+          <div className="h-48 bg-gray-700 rounded"></div>
         </div>
       </div>
     );
@@ -168,30 +168,29 @@ const DSAProgressTracker: React.FC = () => {
 
   if (!a2zProgress) {
     return (
-      <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl shadow-2xl border border-orange-200">
-        <h2 className="text-3xl font-bold text-orange-900">DSA Progress Tracker</h2>
+      <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+        <h2 className="text-2xl font-semibold text-white">DSA Progress Tracker</h2>
         <p className="text-gray-500 mt-4">No progress data available.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl shadow-2xl border border-orange-200">
-      <h2 className="text-3xl font-bold mb-6 text-orange-900 flex items-center gap-3">
-        <BookOpen className="w-8 h-8 text-orange-600" />
+    <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+      <h2 className="text-2xl font-semibold mb-6 text-white flex items-center gap-3">
+        <BookOpen className="w-7 h-7 text-blue-500" />
         DSA Progress Tracker
       </h2>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-lg">
+        <div className="mb-6 p-4 bg-red-900 border border-red-700 text-red-200 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* A2Z Striver Sheet Section */}
-      <div className="mb-8 p-6 bg-white rounded-xl shadow-lg border-2 border-orange-100">
+      <div className="mb-8 p-6 bg-gray-900 rounded-lg border border-gray-700">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-2xl font-bold text-orange-800">A2Z Striver Sheet</h3>
+          <h3 className="text-xl font-semibold text-white">A2Z Striver Sheet</h3>
           <button
             onClick={() => {
               if (editingA2Z) {
@@ -200,69 +199,69 @@ const DSAProgressTracker: React.FC = () => {
                 setEditingA2Z(true);
               }
             }}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all font-semibold shadow-md"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium border border-blue-500 flex items-center gap-2"
           >
-            {editingA2Z ? 'Save Progress' : 'Edit Progress'}
+            {editingA2Z ? <><Save className="w-4 h-4" /> Save</> : <><Edit className="w-4 h-4" /> Edit</>}
           </button>
         </div>
 
         {editingA2Z && tempA2Z ? (
-          <div className="mb-6 p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+          <div className="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Easy Solved</label>
+                <label className="block text-xs font-medium text-gray-400 mb-1">Easy Solved</label>
                 <input
                   type="number"
                   value={tempA2Z.easy_solved}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, easy_solved: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                   max={tempA2Z.easy_total}
                 />
-                <label className="block text-xs font-bold text-gray-700 mt-2 mb-1">Easy Total</label>
+                <label className="block text-xs font-medium text-gray-400 mt-2 mb-1">Easy Total</label>
                 <input
                   type="number"
                   value={tempA2Z.easy_total}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, easy_total: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Medium Solved</label>
+                <label className="block text-xs font-medium text-gray-400 mb-1">Medium Solved</label>
                 <input
                   type="number"
                   value={tempA2Z.medium_solved}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, medium_solved: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                   max={tempA2Z.medium_total}
                 />
-                <label className="block text-xs font-bold text-gray-700 mt-2 mb-1">Medium Total</label>
+                <label className="block text-xs font-medium text-gray-400 mt-2 mb-1">Medium Total</label>
                 <input
                   type="number"
                   value={tempA2Z.medium_total}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, medium_total: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Hard Solved</label>
+                <label className="block text-xs font-medium text-gray-400 mb-1">Hard Solved</label>
                 <input
                   type="number"
                   value={tempA2Z.hard_solved}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, hard_solved: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                   max={tempA2Z.hard_total}
                 />
-                <label className="block text-xs font-bold text-gray-700 mt-2 mb-1">Hard Total</label>
+                <label className="block text-xs font-medium text-gray-400 mt-2 mb-1">Hard Total</label>
                 <input
                   type="number"
                   value={tempA2Z.hard_total}
                   onChange={(e) => setTempA2Z({ ...tempA2Z, hard_total: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   min="0"
                 />
               </div>
@@ -272,9 +271,9 @@ const DSAProgressTracker: React.FC = () => {
                 setEditingA2Z(false);
                 setTempA2Z(a2zProgress);
               }}
-              className="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all font-semibold"
+              className="mt-4 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium flex items-center gap-2"
             >
-              Cancel
+              <X className="w-4 h-4" /> Cancel
             </button>
           </div>
         ) : null}
@@ -283,86 +282,85 @@ const DSAProgressTracker: React.FC = () => {
           label="Easy" 
           solved={a2zProgress.easy_solved} 
           total={a2zProgress.easy_total} 
-          color="bg-gradient-to-r from-green-400 to-green-500" 
+          color="bg-green-600" 
         />
         <ProgressBar 
           label="Medium" 
           solved={a2zProgress.medium_solved} 
           total={a2zProgress.medium_total} 
-          color="bg-gradient-to-r from-yellow-400 to-orange-400" 
+          color="bg-yellow-600" 
         />
         <ProgressBar 
           label="Hard" 
           solved={a2zProgress.hard_solved} 
           total={a2zProgress.hard_total} 
-          color="bg-gradient-to-r from-red-500 to-red-600" 
+          color="bg-red-600" 
         />
         
-        <div className="mt-6 p-6 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl shadow-xl">
-          <p className="text-sm font-semibold opacity-90 mb-1">Overall Progress</p>
+        <div className="mt-6 p-6 bg-blue-900 border border-blue-700 text-white rounded-lg">
+          <p className="text-sm font-medium text-blue-300 mb-1">Overall Progress</p>
           <p className="text-5xl font-bold">{calculateOverall()}%</p>
         </div>
       </div>
 
-      {/* Blind 75 Tracker Section */}
-      <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-orange-100">
+      <div className="p-6 bg-gray-900 rounded-lg border border-gray-700">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-2xl font-bold text-orange-800 flex items-center gap-2">
+          <h3 className="text-xl font-semibold text-white flex items-center gap-2">
             Blind 75 Tracker 
-            <span className="text-lg font-normal text-gray-600">
+            <span className="text-base font-normal text-gray-400">
               ({blind75.filter(q => q.completed).length} / {blind75.length})
             </span>
           </h3>
           <button
             onClick={() => setIsAddingQuestion(!isAddingQuestion)}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all font-semibold shadow-md flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium border border-blue-500 flex items-center gap-2"
           >
-            {isAddingQuestion ? 'Cancel' : <><Plus className="w-5 h-5" /> Add Question</>}
+            {isAddingQuestion ? <><X className="w-5 h-5" /> Cancel</> : <><Plus className="w-5 h-5" /> Add</>}
           </button>
         </div>
 
         {isAddingQuestion && (
-          <form onSubmit={handleAddQuestion} className="mb-6 p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+          <div className="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Question Name *</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Question Name *</label>
                 <input
                   type="text"
                   value={newQuestion.question_name}
                   onChange={(e) => setNewQuestion({ ...newQuestion, question_name: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   placeholder="Two Sum"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Solution Link (optional)</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Solution Link (optional)</label>
                 <input
                   type="url"
                   value={newQuestion.solution_link}
                   onChange={(e) => setNewQuestion({ ...newQuestion, solution_link: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   placeholder="https://leetcode.com/problems/two-sum/"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Tutorial Video Link (optional)</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Tutorial Video Link (optional)</label>
                 <input
                   type="url"
                   value={newQuestion.tutorial_link}
                   onChange={(e) => setNewQuestion({ ...newQuestion, tutorial_link: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
                   placeholder="https://youtube.com/watch?v=..."
                 />
               </div>
               <button
-                type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md"
+                onClick={handleAddQuestion}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium border border-green-500"
               >
                 Add Question
               </button>
             </div>
-          </form>
+          </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -375,10 +373,10 @@ const DSAProgressTracker: React.FC = () => {
             blind75.map((item) => (
               <div 
                 key={item.id} 
-                className={`p-4 rounded-xl border-2 transition-all shadow-md hover:shadow-lg ${
+                className={`p-4 rounded-lg border transition-colors ${
                   item.completed 
-                    ? 'bg-green-50 border-green-300' 
-                    : 'bg-white border-orange-200'
+                    ? 'bg-green-900 border-green-700' 
+                    : 'bg-gray-800 border-gray-700 hover:border-gray-600'
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -388,18 +386,18 @@ const DSAProgressTracker: React.FC = () => {
                       className="flex-shrink-0"
                     >
                       {item.completed ? (
-                        <CheckSquare className="w-6 h-6 text-green-600 cursor-pointer hover:text-green-700" />
+                        <CheckSquare className="w-6 h-6 text-green-400 cursor-pointer hover:text-green-300" />
                       ) : (
-                        <Square className="w-6 h-6 text-gray-400 cursor-pointer hover:text-gray-600" />
+                        <Square className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-400" />
                       )}
                     </button>
-                    <h4 className={`font-bold text-lg ${item.completed ? 'text-green-800 line-through' : 'text-orange-800'}`}>
+                    <h4 className={`font-semibold text-base ${item.completed ? 'text-green-300 line-through' : 'text-white'}`}>
                       {item.question_name}
                     </h4>
                   </div>
                   <button
                     onClick={() => deleteBlind75Question(item.id)}
-                    className="text-red-500 hover:text-red-700 p-1"
+                    className="text-red-400 hover:text-red-300 p-1"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -410,7 +408,7 @@ const DSAProgressTracker: React.FC = () => {
                       href={item.solution_link} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full hover:bg-blue-200 transition-all"
+                      className="flex items-center gap-1 px-3 py-1 bg-blue-900 text-blue-300 text-sm font-medium rounded border border-blue-700 hover:bg-blue-800 transition-colors"
                     >
                       <ExternalLink className="w-3 h-3" />
                       Solution
@@ -421,7 +419,7 @@ const DSAProgressTracker: React.FC = () => {
                       href={item.tutorial_link} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full hover:bg-red-200 transition-all"
+                      className="flex items-center gap-1 px-3 py-1 bg-red-900 text-red-300 text-sm font-medium rounded border border-red-700 hover:bg-red-800 transition-colors"
                     >
                       <Youtube className="w-3 h-3" />
                       Tutorial
