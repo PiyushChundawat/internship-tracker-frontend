@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Trophy, TrendingUp, Calendar, Edit3, Check, X } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -18,6 +19,7 @@ interface ContestLog {
   problems_solved: number;
   total_problems: number;
   notes: string | null;
+  upsolved: boolean;
 }
 
 const CompetitiveProgrammingDashboard: React.FC = () => {
@@ -36,13 +38,11 @@ const CompetitiveProgrammingDashboard: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch CP ratings
       const ratingsResponse = await axios.get(`${API_BASE_URL}/cp-ratings`);
       if (ratingsResponse.data.success) {
         setRatings(ratingsResponse.data.data);
       }
 
-      // Fetch recent contest logs (last 5)
       const contestsResponse = await axios.get(`${API_BASE_URL}/contest-logs`);
       if (contestsResponse.data.success) {
         setRecentContests(contestsResponse.data.data.slice(0, 5));
@@ -74,28 +74,25 @@ const CompetitiveProgrammingDashboard: React.FC = () => {
     }
   };
 
-  const startEdit = (platform: string, currentRating: number) => {
-    setEditingPlatform(platform);
-    setEditingRating(currentRating);
-  };
-
-  const cancelEdit = () => {
-    setEditingPlatform(null);
-    setEditingRating(0);
-  };
-
-  const saveEdit = (platform: string) => {
-    handleUpdateRating(platform, editingRating);
+  const getPlatformColor = (platform: string) => {
+    const colors: Record<string, string> = {
+      'codechef': 'from-amber-500 to-orange-600',
+      'codeforces': 'from-blue-500 to-indigo-600',
+      'leetcode': 'from-yellow-500 to-orange-500',
+      'atcoder': 'from-gray-600 to-gray-800',
+    };
+    return colors[platform.toLowerCase()] || 'from-slate-500 to-slate-700';
   };
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-pink-500">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="h-20 bg-gray-200 rounded"></div>
-            <div className="h-20 bg-gray-200 rounded"></div>
+      <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-slate-200 rounded w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-32 bg-slate-200 rounded-xl"></div>
+            ))}
           </div>
         </div>
       </div>
@@ -103,131 +100,159 @@ const CompetitiveProgrammingDashboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-pink-500">
-      <h2 className="text-xl font-bold mb-4 text-pink-800 flex items-center">
-        <span className="w-3 h-3 bg-pink-500 rounded-full mr-2"></span>
-        Competitive Programming Dashboard
-      </h2>
+    <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+          <Trophy className="w-7 h-7 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold text-slate-800">
+          CP Dashboard
+        </h2>
+      </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* CP Ratings Section */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3 text-pink-700">Current Ratings</h3>
+      {/* Current Ratings */}
+      <div className="mb-10">
+        <h3 className="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-blue-600" />
+          Current Ratings
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {ratings.length === 0 ? (
-            <div className="col-span-3 text-gray-500 text-center py-4">
-              No ratings yet. Add ratings for Codeforces, LeetCode, and CodeChef!
+            <div className="col-span-3 text-center py-8 text-slate-500">
+              No ratings tracked yet. Update your ratings!
             </div>
           ) : (
             ratings.map((rating) => (
-              <div key={rating.platform} className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-                <h4 className="font-semibold text-pink-800 mb-2">{rating.platform}</h4>
+              <div key={rating.platform} className="group relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all">
+                <div className="flex items-start justify-between mb-3">
+                  <span className={`px-3 py-1 bg-gradient-to-r ${getPlatformColor(rating.platform)} text-white text-sm font-bold rounded-lg shadow-md`}>
+                    {rating.platform}
+                  </span>
+                  {editingPlatform !== rating.platform && (
+                    <button
+                      onClick={() => {
+                        setEditingPlatform(rating.platform);
+                        setEditingRating(rating.rating);
+                      }}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                
                 {editingPlatform === rating.platform ? (
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
                       value={editingRating}
                       onChange={(e) => setEditingRating(parseInt(e.target.value) || 0)}
-                      className="w-24 px-2 py-1 border rounded text-sm"
+                      className="flex-1 px-3 py-2 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-xl"
                       autoFocus
                     />
                     <button
-                      onClick={() => saveEdit(rating.platform)}
-                      className="text-green-600 hover:text-green-800 text-xs"
+                      onClick={() => handleUpdateRating(rating.platform, editingRating)}
+                      className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
                     >
-                      Save
+                      <Check className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={cancelEdit}
-                      className="text-gray-600 hover:text-gray-800 text-xs"
+                      onClick={() => setEditingPlatform(null)}
+                      className="p-2 bg-slate-300 text-slate-700 rounded-lg hover:bg-slate-400 transition-all"
                     >
-                      Cancel
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between">
-                    <p className="text-2xl font-bold text-pink-600">{rating.rating}</p>
-                    <button
-                      onClick={() => startEdit(rating.platform, rating.rating)}
-                      className="text-xs text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
-                  </div>
+                  <>
+                    <p className="text-4xl font-bold text-slate-800 mb-2">{rating.rating}</p>
+                    <p className="text-xs text-slate-500">
+                      Updated {new Date(rating.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                  </>
                 )}
-                <p className="text-xs text-pink-500 mt-1">
-                  Updated: {new Date(rating.updated_at).toLocaleDateString()}
-                </p>
               </div>
             ))
           )}
         </div>
       </div>
 
-      {/* Recent Contests Section */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3 text-pink-700">Recent Contests</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Recent Contests */}
+      <div className="mb-10">
+        <h3 className="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-blue-600" />
+          Recent Contests
+        </h3>
+        <div className="space-y-3">
           {recentContests.length === 0 ? (
-            <div className="col-span-2 text-gray-500 text-center py-4">
-              No contest logs yet. Add your contest performance!
+            <div className="text-center py-8 text-slate-500">
+              No contest logs yet. Add your performance!
             </div>
           ) : (
             recentContests.map((contest) => (
-              <div key={contest.id} className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-                <h4 className="font-semibold text-pink-800">{contest.platform}</h4>
-                <p className="text-sm text-pink-700 font-medium">{contest.contest_name}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <p className="text-pink-600">
-                    Solved: <span className="font-bold">{contest.problems_solved}/{contest.total_problems}</span>
-                  </p>
-                  <p className="text-xs text-pink-500">
-                    {new Date(contest.date).toLocaleDateString()}
-                  </p>
+              <div key={contest.id} className="bg-gradient-to-r from-slate-50 to-slate-100 p-5 rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`px-3 py-1 bg-gradient-to-r ${getPlatformColor(contest.platform)} text-white text-xs font-bold rounded-lg shadow-md`}>
+                        {contest.platform}
+                      </span>
+                      {contest.upsolved && (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-lg">
+                          ✓ Upsolved
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="font-bold text-slate-800 mb-1">{contest.contest_name}</h4>
+                    <div className="flex items-center gap-4 text-sm text-slate-600">
+                      <span>
+                        <span className="font-bold text-blue-600">{contest.problems_solved}</span>
+                        <span className="text-slate-400 mx-1">/</span>
+                        <span>{contest.total_problems}</span>
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span>{new Date(contest.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                  </div>
                 </div>
-                {contest.notes && (
-                  <p className="text-xs text-gray-600 mt-2 italic">{contest.notes}</p>
-                )}
               </div>
             ))
           )}
         </div>
         {recentContests.length > 0 && (
           <div className="mt-4 text-center">
-            <a
-              href="#contests"
-              className="text-sm text-pink-600 hover:underline"
-            >
-              View all contest logs →
+            <a href="#contests" className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline">
+              View all contests →
             </a>
           </div>
         )}
       </div>
 
-      {/* Static Contest Schedule (can be made dynamic later) */}
-      <div className="mt-6 pt-6 border-t border-pink-200">
-        <h3 className="text-lg font-semibold mb-3 text-pink-700">Regular Contest Schedule</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-            <h4 className="font-semibold text-pink-800">Codeforces - Div 2</h4>
-            <p className="text-pink-600">Usually Friday-Sunday at 8:05 PM IST</p>
+      {/* Contest Schedule */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
+        <h3 className="text-lg font-semibold text-slate-700 mb-4">📅 Regular Schedule</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-white p-4 rounded-lg border border-blue-100">
+            <p className="font-semibold text-slate-800 mb-1">Codeforces Div 2</p>
+            <p className="text-sm text-slate-600">Fri-Sun • 8:05 PM IST</p>
           </div>
-          <div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-            <h4 className="font-semibold text-pink-800">LeetCode Weekly</h4>
-            <p className="text-pink-600">Every Sunday at 8:00 AM IST</p>
+          <div className="bg-white p-4 rounded-lg border border-blue-100">
+            <p className="font-semibold text-slate-800 mb-1">LeetCode Weekly</p>
+            <p className="text-sm text-slate-600">Sunday • 8:00 AM IST</p>
           </div>
-          <div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-            <h4 className="font-semibold text-pink-800">LeetCode Biweekly</h4>
-            <p className="text-pink-600">Every 2 weeks Saturday at 8:00 PM IST</p>
+          <div className="bg-white p-4 rounded-lg border border-blue-100">
+            <p className="font-semibold text-slate-800 mb-1">LeetCode Biweekly</p>
+            <p className="text-sm text-slate-600">Alt Saturday • 8:00 PM IST</p>
           </div>
-          <div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-            <h4 className="font-semibold text-pink-800">CodeChef Starters</h4>
-            <p className="text-pink-600">Every Wednesday at 8:00 PM IST</p>
+          <div className="bg-white p-4 rounded-lg border border-blue-100">
+            <p className="font-semibold text-slate-800 mb-1">CodeChef Starters</p>
+            <p className="text-sm text-slate-600">Wednesday • 8:00 PM IST</p>
           </div>
         </div>
       </div>
