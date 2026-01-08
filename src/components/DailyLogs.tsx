@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Plus, Calendar, TrendingUp, Target, Trash2, Edit3, Save } from 'lucide-react';
+import { Plus, Calendar, TrendingUp, Target, Trash2, Edit3, Save, Code, Award, Zap, Star, Hash } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -49,20 +49,20 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
     atcoder: 'AtCoder'
   };
 
-  const platformEmojis: Record<string, string> = {
-    striver: '🎯',
-    leetcode: '💻',
-    codechef: '🔥',
-    codeforces: '⚡',
-    atcoder: '🌟'
+  const platformIcons: Record<string, React.ReactNode> = {
+    striver: <Target className="w-5 h-5" />,
+    leetcode: <Code className="w-5 h-5" />,
+    codechef: <Award className="w-5 h-5" />,
+    codeforces: <Zap className="w-5 h-5" />,
+    atcoder: <Star className="w-5 h-5" />
   };
 
   const platformColors: Record<string, string> = {
-    striver: 'from-blue-500 to-blue-600',
-    leetcode: 'from-yellow-500 to-orange-500',
-    codechef: 'from-amber-600 to-orange-600',
-    codeforces: 'from-red-500 to-red-600',
-    atcoder: 'from-gray-600 to-gray-800'
+    striver: 'bg-blue-600 hover:bg-blue-700 border-blue-500',
+    leetcode: 'bg-yellow-600 hover:bg-yellow-700 border-yellow-500',
+    codechef: 'bg-yellow-700 hover:bg-yellow-800 border-yellow-600',
+    codeforces: 'bg-red-600 hover:bg-red-700 border-red-500',
+    atcoder: 'bg-gray-600 hover:bg-gray-700 border-gray-500'
   };
 
   useEffect(() => {
@@ -183,50 +183,45 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-48 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-gray-700 rounded w-1/3"></div>
+          <div className="h-48 bg-gray-700 rounded"></div>
         </div>
       </div>
     );
   }
 
-  // Only show Piyush profile content
   if (profile !== 'piyush') {
     return null;
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
       <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
-          <Calendar className="w-7 h-7 text-white" />
-        </div>
-        <h2 className="text-3xl font-bold text-gray-900">Daily Question Tracker</h2>
+        <Calendar className="w-7 h-7 text-green-500" />
+        <h2 className="text-2xl font-semibold text-white">Daily Question Tracker</h2>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg">
+        <div className="mb-6 p-4 bg-red-900 border border-red-700 text-red-200 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Date Selector */}
       <div className="mb-8">
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Select Date</label>
+        <label className="block text-sm font-medium text-gray-400 mb-2">Select Date</label>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          className="px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white focus:outline-none focus:border-blue-500"
         />
       </div>
 
-      {/* Platform Counters */}
       <div className="mb-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-          <Target className="w-6 h-6 text-blue-600" />
+        <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
+          <Target className="w-5 h-5 text-blue-500" />
           {new Date(selectedDate).toLocaleDateString('en-US', { 
             weekday: 'long',
             month: 'long',
@@ -240,22 +235,22 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
             return (
               <div
                 key={platform}
-                className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all"
+                className="bg-gray-900 border border-gray-700 rounded-lg p-5 hover:border-gray-600 transition-colors"
               >
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">{platformEmojis[platform]}</span>
-                    <span className="font-semibold text-gray-800">{platformLabels[platform]}</span>
+                    <span className="text-gray-400">{platformIcons[platform]}</span>
+                    <span className="font-medium text-white">{platformLabels[platform]}</span>
                   </div>
-                  <div className={`px-4 py-2 bg-gradient-to-r ${platformColors[platform]} text-white rounded-full text-xl font-bold shadow-sm`}>
+                  <div className="px-3 py-1 bg-gray-800 border border-gray-700 text-white rounded text-lg font-bold">
                     {count}
                   </div>
                 </div>
                 <button
                   onClick={() => incrementPlatform(platform)}
-                  className={`w-full py-3 bg-gradient-to-r ${platformColors[platform]} text-white rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 font-semibold shadow-md`}
+                  className={`w-full py-2 ${platformColors[platform]} text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium border`}
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-4 h-4" />
                   Add Question
                 </button>
               </div>
@@ -263,25 +258,23 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
           })}
         </div>
 
-        {/* Total Display */}
         {todayLog && (
-          <div className="mt-6 p-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-xl">
+          <div className="mt-6 p-6 bg-blue-900 border border-blue-700 text-white rounded-lg">
             <div className="text-center">
-              <p className="text-sm font-medium opacity-90 mb-2">Total Questions Today</p>
-              <p className="text-6xl font-bold">{todayLog.total}</p>
+              <p className="text-sm font-medium text-blue-300 mb-2">Total Questions Today</p>
+              <p className="text-5xl font-bold">{todayLog.total}</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Notes Section */}
-      <div className="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+      <div className="mb-8 p-6 bg-gray-900 rounded-lg border border-gray-700">
         <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-bold text-gray-800">Daily Notes</label>
+          <label className="block text-sm font-semibold text-white">Daily Notes</label>
           {!editingNotes ? (
             <button
               onClick={() => setEditingNotes(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+              className="flex items-center gap-2 px-3 py-1 text-sm text-blue-400 hover:bg-gray-800 rounded-lg transition-colors border border-transparent hover:border-gray-700"
             >
               <Edit3 className="w-4 h-4" />
               Edit
@@ -290,7 +283,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
             <div className="flex gap-2">
               <button
                 onClick={updateNotes}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                className="flex items-center gap-2 px-3 py-1 text-sm text-green-400 hover:bg-gray-800 rounded-lg transition-colors border border-transparent hover:border-gray-700"
               >
                 <Save className="w-4 h-4" />
                 Save
@@ -300,7 +293,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
                   setEditingNotes(false);
                   setNotes(todayLog?.notes || '');
                 }}
-                className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded-lg transition-all"
+                className="px-3 py-1 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition-colors border border-transparent hover:border-gray-700"
               >
                 Cancel
               </button>
@@ -312,39 +305,37 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add notes for today..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-white focus:outline-none focus:border-blue-500"
             rows={3}
           />
         ) : (
-          <p className="text-gray-700 italic">
+          <p className="text-gray-400">
             {notes || 'No notes for this day. Click Edit to add notes.'}
           </p>
         )}
       </div>
 
-      {/* Summary Stats */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl">
+        <div className="p-6 bg-purple-900 border border-purple-700 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-6 h-6 text-purple-600" />
-            <p className="text-sm font-semibold text-purple-800">Last 7 Days</p>
+            <TrendingUp className="w-5 h-5 text-purple-300" />
+            <p className="text-sm font-medium text-purple-200">Last 7 Days</p>
           </div>
-          <p className="text-4xl font-bold text-purple-900">{calculateWeekly()}</p>
-          <p className="text-xs text-purple-600 mt-1">questions solved</p>
+          <p className="text-4xl font-bold text-white">{calculateWeekly()}</p>
+          <p className="text-xs text-purple-300 mt-1">questions solved</p>
         </div>
-        <div className="p-6 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl">
+        <div className="p-6 bg-blue-900 border border-blue-700 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
-            <Target className="w-6 h-6 text-blue-600" />
-            <p className="text-sm font-semibold text-blue-800">All Time Total</p>
+            <Target className="w-5 h-5 text-blue-300" />
+            <p className="text-sm font-medium text-blue-200">All Time Total</p>
           </div>
-          <p className="text-4xl font-bold text-blue-900">{calculateOverall()}</p>
-          <p className="text-xs text-blue-600 mt-1">questions solved</p>
+          <p className="text-4xl font-bold text-white">{calculateOverall()}</p>
+          <p className="text-xs text-blue-300 mt-1">questions solved</p>
         </div>
       </div>
 
-      {/* Logs History */}
       <div>
-        <h3 className="text-xl font-bold text-gray-800 mb-5">History</h3>
+        <h3 className="text-lg font-semibold text-white mb-5">History</h3>
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {dailyLogs.length === 0 ? (
             <div className="text-center py-16 text-gray-500">
@@ -355,11 +346,11 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
             dailyLogs.map((log) => {
               const piyushLog = log as DailyLogPiyush;
               return (
-                <div key={log.id} className="p-5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-md transition-all">
+                <div key={log.id} className="p-5 bg-gray-900 border border-gray-700 rounded-lg hover:border-gray-600 transition-colors">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <p className="font-bold text-lg text-gray-900">
+                        <p className="font-semibold text-lg text-white">
                           {new Date(log.date).toLocaleDateString('en-US', { 
                             weekday: 'short',
                             year: 'numeric', 
@@ -367,7 +358,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
                             day: 'numeric' 
                           })}
                         </p>
-                        <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold rounded-full">
+                        <span className="px-3 py-1 bg-blue-900 border border-blue-700 text-blue-300 text-sm font-medium rounded">
                           {piyushLog.total} total
                         </span>
                       </div>
@@ -375,22 +366,22 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
                         {platforms.map(platform => {
                           const count = piyushLog[platform];
                           return count > 0 ? (
-                            <span key={platform} className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1">
-                              <span>{platformEmojis[platform]}</span>
+                            <span key={platform} className="text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded border border-gray-700 font-medium flex items-center gap-1">
+                              <Hash className="w-3 h-3" />
                               {platformLabels[platform]}: {count}
                             </span>
                           ) : null;
                         })}
                       </div>
                       {log.notes && (
-                        <p className="text-sm text-gray-600 italic mt-2 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
-                          📝 {log.notes}
+                        <p className="text-sm text-gray-400 mt-2 bg-gray-800 px-3 py-2 rounded-lg border border-gray-700">
+                          {log.notes}
                         </p>
                       )}
                     </div>
                     <button
                       onClick={() => deleteLog(log.id)}
-                      className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      className="ml-4 p-2 text-red-400 hover:bg-red-900 hover:bg-opacity-30 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
