@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Plus, Minus, Calendar, TrendingUp, Target } from 'lucide-react';
+import { Plus, Calendar, TrendingUp, Target, Trash2, Edit3, Save } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -12,7 +12,6 @@ interface DailyLogPiyush {
   codechef: number;
   codeforces: number;
   atcoder: number;
-  total: number;
   notes: string | null;
 }
 
@@ -35,22 +34,31 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [todayLog, setTodayLog] = useState<DailyLogPiyush | null>(null);
   const [notes, setNotes] = useState('');
+  const [editingNotes, setEditingNotes] = useState(false);
 
   const platforms = ['striver', 'leetcode', 'codechef', 'codeforces', 'atcoder'];
   const platformLabels: Record<string, string> = {
-    striver: 'Striver',
+    striver: 'Striver A2Z',
     leetcode: 'LeetCode',
     codechef: 'CodeChef',
     codeforces: 'Codeforces',
     atcoder: 'AtCoder'
   };
 
+  const platformEmojis: Record<string, string> = {
+    striver: '🎯',
+    leetcode: '💻',
+    codechef: '🔥',
+    codeforces: '⚡',
+    atcoder: '🌟'
+  };
+
   const platformColors: Record<string, string> = {
     striver: 'from-blue-500 to-blue-600',
     leetcode: 'from-yellow-500 to-orange-500',
-    codechef: 'from-amber-600 to-amber-700',
+    codechef: 'from-amber-600 to-orange-600',
     codeforces: 'from-red-500 to-red-600',
-    atcoder: 'from-gray-600 to-gray-700'
+    atcoder: 'from-gray-600 to-gray-800'
   };
 
   useEffect(() => {
@@ -117,6 +125,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
       if (response.data.success) {
         setTodayLog(response.data.data);
         fetchDailyLogs();
+        setEditingNotes(false);
       }
     } catch (err: any) {
       console.error('Error updating notes:', err);
@@ -141,6 +150,10 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
     }
   };
 
+  const calculateTotal = (log: DailyLogPiyush) => {
+    return log.striver + log.leetcode + log.codechef + log.codeforces + log.atcoder;
+  };
+
   const calculateWeekly = () => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -149,7 +162,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
       .filter(log => new Date(log.date) >= oneWeekAgo)
       .reduce((sum, log) => {
         if (profile === 'piyush') {
-          return sum + (log as DailyLogPiyush).total;
+          return sum + calculateTotal(log as DailyLogPiyush);
         } else {
           const shrutiLog = log as DailyLogShruti;
           return sum + shrutiLog.python_questions_solved + shrutiLog.sql_questions_solved;
@@ -157,10 +170,10 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
       }, 0);
   };
 
-  const calculateTotal = () => {
+  const calculateOverall = () => {
     return dailyLogs.reduce((sum, log) => {
       if (profile === 'piyush') {
-        return sum + (log as DailyLogPiyush).total;
+        return sum + calculateTotal(log as DailyLogPiyush);
       } else {
         const shrutiLog = log as DailyLogShruti;
         return sum + shrutiLog.python_questions_solved + shrutiLog.sql_questions_solved;
@@ -170,175 +183,222 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl shadow-2xl border border-purple-200">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-purple-200 rounded w-1/3"></div>
-          <div className="h-48 bg-purple-200 rounded"></div>
+      <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-48 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
+  // Only show Piyush profile content
+  if (profile !== 'piyush') {
+    return null;
+  }
+
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl shadow-2xl border border-purple-200">
-      <h2 className="text-3xl font-bold mb-6 text-purple-900 flex items-center gap-3">
-        <Calendar className="w-8 h-8 text-purple-600" />
-        Daily Question Logs
-      </h2>
+    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+          <Calendar className="w-7 h-7 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900">Daily Question Tracker</h2>
+      </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-lg">
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg">
           {error}
         </div>
       )}
 
       {/* Date Selector */}
-      <div className="mb-6">
-        <label className="block text-sm font-semibold text-purple-700 mb-2">Select Date</label>
+      <div className="mb-8">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Select Date</label>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="w-full md:w-auto px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all"
+          className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
       </div>
 
-      {/* Platform Counters (Piyush only) */}
-      {profile === 'piyush' && (
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
-            <Target className="w-6 h-6" />
-            Platform Counters
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {platforms.map((platform) => (
+      {/* Platform Counters */}
+      <div className="mb-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+          <Target className="w-6 h-6 text-blue-600" />
+          {new Date(selectedDate).toLocaleDateString('en-US', { 
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          })}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {platforms.map((platform) => {
+            const count = todayLog?.[platform as keyof DailyLogPiyush] || 0;
+            return (
               <div
                 key={platform}
-                className="bg-white p-6 rounded-xl shadow-lg border-2 border-purple-100 hover:shadow-xl transition-all"
+                className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all"
               >
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-gray-700">{platformLabels[platform]}</span>
-                  <div className={`px-3 py-1 bg-gradient-to-r ${platformColors[platform]} text-white rounded-full text-xl font-bold`}>
-                    {todayLog?.[platform as keyof DailyLogPiyush] || 0}
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{platformEmojis[platform]}</span>
+                    <span className="font-semibold text-gray-800">{platformLabels[platform]}</span>
+                  </div>
+                  <div className={`px-4 py-2 bg-gradient-to-r ${platformColors[platform]} text-white rounded-full text-xl font-bold shadow-sm`}>
+                    {count}
                   </div>
                 </div>
                 <button
                   onClick={() => incrementPlatform(platform)}
-                  className={`w-full py-3 bg-gradient-to-r ${platformColors[platform]} text-white rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 font-semibold shadow-md`}
+                  className={`w-full py-3 bg-gradient-to-r ${platformColors[platform]} text-white rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 font-semibold shadow-md`}
                 >
                   <Plus className="w-5 h-5" />
                   Add Question
                 </button>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          {/* Total Display */}
-          {todayLog && (
-            <div className="mt-6 p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl shadow-xl">
-              <div className="text-center">
-                <p className="text-sm font-medium opacity-90 mb-1">Total Questions Today</p>
-                <p className="text-5xl font-bold">{todayLog.total}</p>
-              </div>
+        {/* Total Display */}
+        {todayLog && (
+          <div className="mt-6 p-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-xl">
+            <div className="text-center">
+              <p className="text-sm font-medium opacity-90 mb-2">Total Questions Today</p>
+              <p className="text-6xl font-bold">{calculateTotal(todayLog)}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Notes Section */}
+      <div className="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-bold text-gray-800">Daily Notes</label>
+          {!editingNotes ? (
+            <button
+              onClick={() => setEditingNotes(true)}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+            >
+              <Edit3 className="w-4 h-4" />
+              Edit
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={updateNotes}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-all"
+              >
+                <Save className="w-4 h-4" />
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setEditingNotes(false);
+                  setNotes(todayLog?.notes || '');
+                }}
+                className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded-lg transition-all"
+              >
+                Cancel
+              </button>
             </div>
           )}
         </div>
-      )}
-
-      {/* Notes Section */}
-      <div className="mb-8">
-        <label className="block text-sm font-semibold text-purple-700 mb-2">Notes</label>
-        <div className="flex gap-2">
-          <input
-            type="text"
+        {editingNotes ? (
+          <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            onBlur={updateNotes}
-            placeholder="Add notes for this day..."
-            className="flex-1 px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all"
+            placeholder="Add notes for today..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows={3}
           />
-        </div>
+        ) : (
+          <p className="text-gray-700 italic">
+            {notes || 'No notes for this day. Click Edit to add notes.'}
+          </p>
+        )}
       </div>
 
       {/* Summary Stats */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-purple-100">
+        <div className="p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="w-6 h-6 text-purple-600" />
-            <p className="text-sm font-semibold text-purple-600">Weekly Total (Last 7 Days)</p>
+            <p className="text-sm font-semibold text-purple-800">Last 7 Days</p>
           </div>
           <p className="text-4xl font-bold text-purple-900">{calculateWeekly()}</p>
+          <p className="text-xs text-purple-600 mt-1">questions solved</p>
         </div>
-        <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-pink-100">
+        <div className="p-6 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
-            <Target className="w-6 h-6 text-pink-600" />
-            <p className="text-sm font-semibold text-pink-600">Overall Total</p>
+            <Target className="w-6 h-6 text-blue-600" />
+            <p className="text-sm font-semibold text-blue-800">All Time Total</p>
           </div>
-          <p className="text-4xl font-bold text-pink-900">{calculateTotal()}</p>
+          <p className="text-4xl font-bold text-blue-900">{calculateOverall()}</p>
+          <p className="text-xs text-blue-600 mt-1">questions solved</p>
         </div>
       </div>
 
       {/* Logs History */}
       <div>
-        <h3 className="text-xl font-bold text-purple-800 mb-4">History</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-5">History</h3>
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {dailyLogs.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p>No daily logs yet. Start tracking today!</p>
+            <div className="text-center py-16 text-gray-500">
+              <Calendar className="w-20 h-20 mx-auto mb-4 opacity-30" />
+              <p className="text-lg">No logs yet. Start tracking today!</p>
             </div>
           ) : (
-            dailyLogs.map((log) => (
-              <div key={log.id} className="p-5 bg-white rounded-xl shadow-md hover:shadow-lg transition-all border border-purple-100">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <p className="font-bold text-lg text-purple-900 mb-2">
-                      {new Date(log.date).toLocaleDateString('en-US', { 
-                        weekday: 'short',
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </p>
-                    {profile === 'piyush' ? (
+            dailyLogs.map((log) => {
+              const piyushLog = log as DailyLogPiyush;
+              const total = calculateTotal(piyushLog);
+              return (
+                <div key={log.id} className="p-5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-md transition-all">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <p className="font-bold text-lg text-gray-900">
+                          {new Date(log.date).toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                        <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold rounded-full">
+                          {total} total
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
                         {platforms.map(platform => {
-                          const count = (log as DailyLogPiyush)[platform as keyof DailyLogPiyush];
+                          const count = piyushLog[platform as keyof DailyLogPiyush];
                           return count > 0 ? (
-                            <span key={platform} className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
+                            <span key={platform} className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1">
+                              <span>{platformEmojis[platform]}</span>
                               {platformLabels[platform]}: {count}
                             </span>
                           ) : null;
                         })}
-                        <span className="text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full font-bold">
-                          Total: {(log as DailyLogPiyush).total}
-                        </span>
                       </div>
-                    ) : (
-                      <div className="flex gap-2 mb-2">
-                        <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                          Python: {(log as DailyLogShruti).python_questions_solved}
-                        </span>
-                        <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                          SQL: {(log as DailyLogShruti).sql_questions_solved}
-                        </span>
-                      </div>
-                    )}
-                    {log.notes && (
-                      <p className="text-sm text-gray-600 italic mt-2">
-                        📝 {log.notes}
-                      </p>
-                    )}
+                      {log.notes && (
+                        <p className="text-sm text-gray-600 italic mt-2 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
+                          📝 {log.notes}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => deleteLog(log.id)}
+                      className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => deleteLog(log.id)}
-                    className="ml-4 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all"
-                  >
-                    Delete
-                  </button>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
