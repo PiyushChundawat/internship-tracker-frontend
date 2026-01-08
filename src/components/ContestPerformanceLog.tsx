@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Trophy, Plus, CheckCircle, Circle, Edit2, Trash2, X } from 'lucide-react';
+import { Trophy, Plus, CheckCircle, Circle, Trash2, X } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
