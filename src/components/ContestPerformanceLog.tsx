@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Trophy, Plus, CheckCircle, Circle, Edit2, Trash2 } from 'lucide-react';
+import { Trophy, Plus, CheckCircle, Circle, Edit2, Trash2, X } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -21,6 +21,7 @@ const ContestPerformanceLog: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingNotes, setEditingNotes] = useState('');
   const [newContest, setNewContest] = useState({
     platform: 'Codechef',
     contest_name: '',
@@ -92,9 +93,9 @@ const ContestPerformanceLog: React.FC = () => {
     }
   };
 
-  const handleUpdateContest = async (id: string, updates: Partial<ContestLog>) => {
+  const handleUpdateNotes = async (id: string, notes: string) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/contest-logs/${id}`, updates);
+      const response = await axios.put(`${API_BASE_URL}/contest-logs/${id}`, { notes });
       if (response.data.success) {
         setContestLogs(contestLogs.map(log => 
           log.id === id ? response.data.data : log
@@ -102,8 +103,8 @@ const ContestPerformanceLog: React.FC = () => {
         setEditingId(null);
       }
     } catch (err: any) {
-      console.error('Error updating contest log:', err);
-      setError(err.response?.data?.error || 'Failed to update contest log');
+      console.error('Error updating notes:', err);
+      setError(err.response?.data?.error || 'Failed to update notes');
     }
   };
 
@@ -121,58 +122,60 @@ const ContestPerformanceLog: React.FC = () => {
     }
   };
 
-  const getPlatformColor = (platform: string) => {
+  const getPlatformGradient = (platform: string) => {
     const colors: Record<string, string> = {
-      'Codechef': 'from-amber-500 to-orange-500',
-      'Codeforces': 'from-blue-500 to-blue-600',
+      'Codechef': 'from-amber-500 to-orange-600',
+      'Codeforces': 'from-blue-500 to-indigo-600',
       'LeetCode': 'from-yellow-500 to-orange-500',
-      'AtCoder': 'from-gray-600 to-gray-700',
+      'AtCoder': 'from-gray-600 to-gray-800',
     };
-    return colors[platform] || 'from-gray-500 to-gray-600';
+    return colors[platform] || 'from-gray-500 to-gray-700';
   };
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-2xl border border-blue-200">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-blue-200 rounded w-1/3"></div>
-          <div className="h-48 bg-blue-200 rounded"></div>
+      <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-48 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-2xl border border-blue-200">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-blue-900 flex items-center gap-3">
-          <Trophy className="w-8 h-8 text-blue-600" />
-          Contest Performance Log
-        </h2>
+    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+            <Trophy className="w-7 h-7 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">Contest Performance Log</h2>
+        </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all font-semibold shadow-lg flex items-center gap-2"
+          className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all font-semibold shadow-md flex items-center gap-2"
         >
-          {isAdding ? 'Cancel' : <><Plus className="w-5 h-5" /> Add Contest</>}
+          {isAdding ? <><X className="w-5 h-5" /> Cancel</> : <><Plus className="w-5 h-5" /> Add Contest</>}
         </button>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-lg">
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg">
           {error}
         </div>
       )}
 
       {isAdding && (
-        <form onSubmit={handleAddContest} className="mb-8 p-6 bg-white rounded-xl shadow-lg border-2 border-blue-100">
-          <h3 className="text-lg font-bold text-blue-800 mb-4">Add New Contest</h3>
+        <form onSubmit={handleAddContest} className="mb-8 p-6 bg-gray-50 rounded-xl border-2 border-gray-200">
+          <h3 className="text-lg font-bold text-gray-800 mb-5">Add New Contest</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Platform *</label>
               <select
                 value={newContest.platform}
                 onChange={(e) => setNewContest({ ...newContest, platform: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 required
               >
                 {platformOptions.map(platform => (
@@ -186,7 +189,7 @@ const ContestPerformanceLog: React.FC = () => {
                 type="text"
                 value={newContest.contest_name}
                 onChange={(e) => setNewContest({ ...newContest, contest_name: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Starters 219"
                 required
               />
@@ -199,7 +202,7 @@ const ContestPerformanceLog: React.FC = () => {
                 type="date"
                 value={newContest.date}
                 onChange={(e) => setNewContest({ ...newContest, date: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
               />
             </div>
@@ -209,7 +212,7 @@ const ContestPerformanceLog: React.FC = () => {
                 type="number"
                 value={newContest.problems_solved}
                 onChange={(e) => setNewContest({ ...newContest, problems_solved: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 min="0"
               />
             </div>
@@ -219,7 +222,7 @@ const ContestPerformanceLog: React.FC = () => {
                 type="number"
                 value={newContest.total_problems}
                 onChange={(e) => setNewContest({ ...newContest, total_problems: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 min="0"
               />
             </div>
@@ -229,14 +232,14 @@ const ContestPerformanceLog: React.FC = () => {
             <textarea
               value={newContest.notes}
               onChange={(e) => setNewContest({ ...newContest, notes: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows={3}
               placeholder="Performance notes, learnings..."
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-lg"
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all font-semibold shadow-md"
           >
             Save Contest
           </button>
@@ -253,22 +256,20 @@ const ContestPerformanceLog: React.FC = () => {
           contestLogs.map((contest) => (
             <div 
               key={contest.id} 
-              className={`p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all border-l-4 ${
-                contest.upsolved ? 'border-green-500' : 'border-blue-500'
-              }`}
+              className="p-6 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-lg transition-all"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`px-4 py-1 bg-gradient-to-r ${getPlatformColor(contest.platform)} text-white text-sm font-bold rounded-full`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`px-4 py-1.5 bg-gradient-to-r ${getPlatformGradient(contest.platform)} text-white text-sm font-bold rounded-full shadow-sm`}>
                       {contest.platform}
                     </span>
                     <button
                       onClick={() => toggleUpsolved(contest.id)}
-                      className={`flex items-center gap-2 px-4 py-1 rounded-full text-sm font-semibold transition-all ${
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all shadow-sm ${
                         contest.upsolved 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
                       }`}
                     >
                       {contest.upsolved ? (
@@ -278,7 +279,7 @@ const ContestPerformanceLog: React.FC = () => {
                       )}
                     </button>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">{contest.contest_name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{contest.contest_name}</h3>
                   <div className="flex items-center gap-4 mb-3">
                     <span className="text-sm text-gray-600">
                       📅 {new Date(contest.date).toLocaleDateString('en-US', { 
@@ -292,30 +293,41 @@ const ContestPerformanceLog: React.FC = () => {
                       <span className="text-gray-400">/</span>
                       <span className="text-lg text-gray-600">{contest.total_problems}</span>
                       {contest.total_problems > 0 && (
-                        <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
+                        <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full border border-blue-200">
                           {Math.round((contest.problems_solved / contest.total_problems) * 100)}%
                         </span>
                       )}
                     </div>
                   </div>
                   {editingId === contest.id ? (
-                    <textarea
-                      defaultValue={contest.notes || ''}
-                      onBlur={(e) => handleUpdateContest(contest.id, { notes: e.target.value })}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleUpdateContest(contest.id, { notes: e.currentTarget.value });
-                        }
-                      }}
-                      className="w-full px-3 py-2 border-2 border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      rows={2}
-                      autoFocus
-                    />
+                    <div className="flex gap-2">
+                      <textarea
+                        value={editingNotes}
+                        onChange={(e) => setEditingNotes(e.target.value)}
+                        className="flex-1 px-3 py-2 border-2 border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows={2}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => handleUpdateNotes(contest.id, editingNotes)}
+                        className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   ) : (
                     <p 
-                      onClick={() => setEditingId(contest.id)}
-                      className="text-sm text-gray-600 italic cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-lg transition-all"
+                      onClick={() => {
+                        setEditingId(contest.id);
+                        setEditingNotes(contest.notes || '');
+                      }}
+                      className="text-sm text-gray-600 italic cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-lg transition-all border border-transparent hover:border-blue-200"
                     >
                       {contest.notes || '📝 Click to add notes...'}
                     </p>
