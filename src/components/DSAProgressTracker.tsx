@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BookOpen, CheckSquare, Square, Plus, ExternalLink, Youtube, Edit2, Trash2 } from 'lucide-react';
+import { BookOpen, CheckSquare, Square, Plus, ExternalLink, Youtube, Trash2 } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
