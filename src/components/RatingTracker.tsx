@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { TrendingUp } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -33,7 +34,6 @@ const RatingTracker: React.FC = () => {
           ratingsMap[r.platform.toLowerCase()] = r.rating;
         });
         
-        // Ensure all three platforms exist
         setRatings({
           codeforces: ratingsMap['codeforces'] || 0,
           leetcode: ratingsMap['leetcode'] || 0,
@@ -52,7 +52,6 @@ const RatingTracker: React.FC = () => {
   const updateRating = async (platform: string, value: string) => {
     const numValue = parseInt(value) || 0;
     
-    // Optimistic update
     setRatings(prev => ({ ...prev, [platform]: numValue }));
 
     try {
@@ -66,20 +65,19 @@ const RatingTracker: React.FC = () => {
     } catch (err: any) {
       console.error('Error updating rating:', err);
       setError(err.response?.data?.error || 'Failed to update rating');
-      // Revert on error
       fetchRatings();
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-pink-500">
+      <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-6 bg-gray-700 rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-3 gap-6">
-            <div className="h-24 bg-gray-200 rounded"></div>
-            <div className="h-24 bg-gray-200 rounded"></div>
-            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-700 rounded"></div>
+            <div className="h-24 bg-gray-700 rounded"></div>
+            <div className="h-24 bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -87,27 +85,26 @@ const RatingTracker: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-pink-500">
-      <h2 className="text-xl font-bold mb-4 text-pink-800 flex items-center">
-        <span className="w-3 h-3 bg-pink-500 rounded-full mr-2"></span>
+    <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+      <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2">
+        <TrendingUp className="w-6 h-6 text-purple-500" />
         Rating Tracker
       </h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div className="mb-4 p-3 bg-red-900 border border-red-700 text-red-200 rounded-lg">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Codeforces */}
         <div className="text-center">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Codeforces</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Codeforces</label>
           <input
             type="number"
             value={ratings.codeforces}
             onChange={(e) => updateRating('codeforces', e.target.value)}
-            className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-center text-xl font-bold text-white focus:outline-none focus:border-blue-500"
             min="0"
           />
           <p className="text-xs text-gray-500 mt-2">
@@ -119,14 +116,13 @@ const RatingTracker: React.FC = () => {
           </p>
         </div>
 
-        {/* LeetCode */}
         <div className="text-center">
-          <label className="block text-sm font-medium text-gray-700 mb-2">LeetCode</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">LeetCode</label>
           <input
             type="number"
             value={ratings.leetcode}
             onChange={(e) => updateRating('leetcode', e.target.value)}
-            className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-center text-xl font-bold text-white focus:outline-none focus:border-blue-500"
             min="0"
           />
           <p className="text-xs text-gray-500 mt-2">
@@ -137,14 +133,13 @@ const RatingTracker: React.FC = () => {
           </p>
         </div>
 
-        {/* CodeChef */}
         <div className="text-center">
-          <label className="block text-sm font-medium text-gray-700 mb-2">CodeChef</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">CodeChef</label>
           <input
             type="number"
             value={ratings.codechef}
             onChange={(e) => updateRating('codechef', e.target.value)}
-            className="w-full p-3 border border-pink-300 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-center text-xl font-bold text-white focus:outline-none focus:border-blue-500"
             min="0"
           />
           <p className="text-xs text-gray-500 mt-2">
@@ -159,9 +154,10 @@ const RatingTracker: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
-        <p className="text-sm text-pink-700">
-          💡 <strong>Tip:</strong> Update your ratings after each contest to track your progress over time!
+      <div className="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <p className="text-sm text-gray-400">
+          <TrendingUp className="w-4 h-4 inline mr-1 text-purple-500" />
+          <strong className="text-white">Tip:</strong> Update your ratings after each contest to track your progress over time!
         </p>
       </div>
     </div>
