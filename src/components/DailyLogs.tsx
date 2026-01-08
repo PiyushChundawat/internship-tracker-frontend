@@ -12,6 +12,7 @@ interface DailyLogPiyush {
   codechef: number;
   codeforces: number;
   atcoder: number;
+  total: number;
   notes: string | null;
 }
 
@@ -36,7 +37,10 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
   const [notes, setNotes] = useState('');
   const [editingNotes, setEditingNotes] = useState(false);
 
-  const platforms = ['striver', 'leetcode', 'codechef', 'codeforces', 'atcoder'];
+  const platforms: Array<keyof Omit<DailyLogPiyush, 'id' | 'date' | 'total' | 'notes'>> = [
+    'striver', 'leetcode', 'codechef', 'codeforces', 'atcoder'
+  ];
+  
   const platformLabels: Record<string, string> = {
     striver: 'Striver A2Z',
     leetcode: 'LeetCode',
@@ -150,10 +154,6 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
     }
   };
 
-  const calculateTotal = (log: DailyLogPiyush) => {
-    return log.striver + log.leetcode + log.codechef + log.codeforces + log.atcoder;
-  };
-
   const calculateWeekly = () => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -162,7 +162,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
       .filter(log => new Date(log.date) >= oneWeekAgo)
       .reduce((sum, log) => {
         if (profile === 'piyush') {
-          return sum + calculateTotal(log as DailyLogPiyush);
+          return sum + (log as DailyLogPiyush).total;
         } else {
           const shrutiLog = log as DailyLogShruti;
           return sum + shrutiLog.python_questions_solved + shrutiLog.sql_questions_solved;
@@ -173,7 +173,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
   const calculateOverall = () => {
     return dailyLogs.reduce((sum, log) => {
       if (profile === 'piyush') {
-        return sum + calculateTotal(log as DailyLogPiyush);
+        return sum + (log as DailyLogPiyush).total;
       } else {
         const shrutiLog = log as DailyLogShruti;
         return sum + shrutiLog.python_questions_solved + shrutiLog.sql_questions_solved;
@@ -236,7 +236,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {platforms.map((platform) => {
-            const count = todayLog?.[platform as keyof DailyLogPiyush] || 0;
+            const count = (todayLog?.[platform] as number) || 0;
             return (
               <div
                 key={platform}
@@ -268,7 +268,7 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
           <div className="mt-6 p-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-xl">
             <div className="text-center">
               <p className="text-sm font-medium opacity-90 mb-2">Total Questions Today</p>
-              <p className="text-6xl font-bold">{calculateTotal(todayLog)}</p>
+              <p className="text-6xl font-bold">{todayLog.total}</p>
             </div>
           </div>
         )}
@@ -354,7 +354,6 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
           ) : (
             dailyLogs.map((log) => {
               const piyushLog = log as DailyLogPiyush;
-              const total = calculateTotal(piyushLog);
               return (
                 <div key={log.id} className="p-5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-md transition-all">
                   <div className="flex justify-between items-start">
@@ -369,12 +368,12 @@ const DailyLogs: React.FC<DailyLogsProps> = ({ profile }) => {
                           })}
                         </p>
                         <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold rounded-full">
-                          {total} total
+                          {piyushLog.total} total
                         </span>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
                         {platforms.map(platform => {
-                          const count = piyushLog[platform as keyof DailyLogPiyush];
+                          const count = piyushLog[platform];
                           return count > 0 ? (
                             <span key={platform} className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1">
                               <span>{platformEmojis[platform]}</span>
