@@ -124,7 +124,7 @@ const ContestPerformanceLog: React.FC = () => {
 
   const getPlatformColor = (platform: string) => {
     const colors: Record<string, string> = {
-      'Codechef': 'bg-yellow-600',
+      'Codechef': 'bg-green-600',
       'Codeforces': 'bg-blue-600',
       'LeetCode': 'bg-yellow-500',
       'AtCoder': 'bg-gray-600',
