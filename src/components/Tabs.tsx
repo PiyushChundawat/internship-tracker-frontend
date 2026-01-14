@@ -13,25 +13,28 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="w-full">
-      <div className="flex border-b mb-4 overflow-x-auto">
-        {tabs.map((tab, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveTab(index)}
-            className={`px-4 py-2 font-medium whitespace-nowrap ${
-              activeTab === index
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <div>{tabs[activeTab].content}</div>
+  <div className="w-full bg-slate-900 rounded-xl border border-slate-800">
+    <div className="flex border-b border-slate-800 px-2 overflow-x-auto">
+      {tabs.map((tab, index) => (
+        <button
+          key={index}
+          onClick={() => setActiveTab(index)}
+          className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
+            activeTab === index
+              ? 'text-slate-100 border-b-2 border-slate-100'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
-  );
-};
+
+    <div className="p-4 bg-slate-900 text-slate-100">
+      {tabs[activeTab].content}
+    </div>
+  </div>
+);
+
 
 export default Tabs;
