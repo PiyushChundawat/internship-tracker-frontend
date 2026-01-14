@@ -12,7 +12,7 @@ const AppContent: React.FC = () => {
   const { profile, setProfile } = useData();
 
   return (
-    <div className="min-h-screen bg-green-100">
+    <div className="min-h-screen bg-gray-100">
       <header className="bg-slate-900 border-b border-slate-800">
   <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
     <div className="flex items-center space-x-3">
