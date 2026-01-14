@@ -16,15 +16,21 @@ const AppContent: React.FC = () => {
       <header className="bg-slate-900 border-b border-slate-800">
   <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
     <div className="flex items-center space-x-3">
-      <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center border border-slate-700">
-        <span className="text-slate-200 font-semibold text-sm tracking-wide">
-          IT
-        </span>
-      </div>
-      <h1 className="text-xl font-semibold text-slate-100 tracking-tight">
-        Internship Tracker
-      </h1>
-    </div>
+  <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center border border-slate-700">
+    <span className="text-slate-100 font-bold text-sm tracking-wider">
+      T
+    </span>
+  </div>
+  <div className="flex flex-col leading-tight">
+    <h1 className="text-xl font-semibold text-slate-100 tracking-tight">
+      Tracktern
+    </h1>
+    <span className="text-xs text-slate-400">
+      Internship Tracker
+    </span>
+  </div>
+</div>
+
 
     <div className="flex items-center">
       <ProfileToggle profile={profile} setProfile={setProfile} />
