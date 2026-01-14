@@ -76,7 +76,7 @@ const CompetitiveProgrammingDashboard: React.FC = () => {
 
   const getPlatformColor = (platform: string) => {
     const colors: Record<string, string> = {
-      'codechef': 'text-amber-500',
+      'codechef': 'text-green-500',
       'codeforces': 'text-blue-500',
       'leetcode': 'text-yellow-500',
     };
@@ -85,7 +85,7 @@ const CompetitiveProgrammingDashboard: React.FC = () => {
 
   const getPlatformBadge = (platform: string) => {
     const badges: Record<string, string> = {
-      'Codechef': 'bg-amber-600',
+      'Codechef': 'bg-green-600',
       'Codeforces': 'bg-blue-600',
       'LeetCode': 'bg-yellow-600',
     };
