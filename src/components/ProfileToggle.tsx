@@ -8,7 +8,7 @@ interface ProfileToggleProps {
 const ProfileToggle: React.FC<ProfileToggleProps> = ({ profile, setProfile }) => {
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-gray-600 font-medium">Profile:</span>
+      <span className="text-white-600 font-medium">Profile:</span>
       <div className="flex bg-gray-200 rounded-lg p-1">
         <button
           onClick={() => setProfile('piyush')}
